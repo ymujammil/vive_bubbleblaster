@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour {
     int SCORE = 0;
     float TIMER = 0.0f;
 
-    bool PLAYING = true;
+    public bool PLAYING = true;
 
     public GameObject originalBubble;
 
@@ -23,7 +23,8 @@ public class GameController : MonoBehaviour {
         if(PLAYING)
         {
             TIMER += Time.deltaTime;
-            DisplayTime();
+            DisplayTimeAndScore();
+
             if (SCORE >= 20)
             {
                 EndGame();
@@ -33,15 +34,17 @@ public class GameController : MonoBehaviour {
     }
 
     // Display the time
-    void DisplayTime()
+    void DisplayTimeAndScore()
     {
-        GameObject.FindGameObjectWithTag("Sign").GetComponent<Text>().text = "Time: " + FormatTimer()
+        string highscore = (PlayerPrefs.HasKey("BestTime") ? FormatTimer(PlayerPrefs.GetFloat("BestTime")) : "Not Set");
+        GameObject.FindGameObjectWithTag("Sign1").GetComponent<Text>().text = "Time: " + FormatTimer(TIMER)
                                                                                       + System.Environment.NewLine
                                                                                       + "Bubbles: " + SCORE + "/20";
+        GameObject.FindGameObjectWithTag("Sign2").GetComponent<Text>().text = "High Score: " +  highscore;
     }
 
     // Helper method convert the timer to minute/second format
-    string FormatTimer()
+    string FormatTimer(float TIMER)
     {
         if(TIMER <= 60.0f)
         {
@@ -79,10 +82,10 @@ public class GameController : MonoBehaviour {
     void EndGame()
     {
         PLAYING = false;
-        if (!PlayerPrefs.HasKey("BestTime") || PlayerPrefs.GetFloat("BestTime") < TIMER)
+        if (!PlayerPrefs.HasKey("BestTime") || TIMER < PlayerPrefs.GetFloat("BestTime"))
         {
             PlayerPrefs.SetFloat("BestTime", TIMER);
-            GameObject.FindGameObjectWithTag("Sign").GetComponent<Text>().text = "Time: " + FormatTimer()
+            GameObject.FindGameObjectWithTag("Sign1").GetComponent<Text>().text = "Time: " + FormatTimer(TIMER)
                                                                               + System.Environment.NewLine
                                                                               + "New High Score!";
         }

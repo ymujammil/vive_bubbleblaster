@@ -23,6 +23,6 @@ public class BubbleScript : MonoBehaviour {
             _system.Play();
         }
         _controller.SendMessage("NewBubble");
-        Destroy(gameObject);
+        Destroy(gameObject,1.0f);
     }
 }
