@@ -14,7 +14,8 @@ public class PlayerScript_Gaze : MonoBehaviour {
     //GameObject marker;
 
     private Vector2 GazeCenter;
-    private float GazeTime;
+    private float GazeTime1;
+    private float GazeTime2;
 
     // Use this for initialization
     void Start () {
@@ -46,21 +47,26 @@ public class PlayerScript_Gaze : MonoBehaviour {
             if (Physics.Raycast(gazeray, out hit))
             {
                 if (hit.collider.CompareTag("Bubble")) {
-                    GazeTime += Time.deltaTime;
-                    if (GazeTime > 1.0f)
+                    GazeTime1 += Time.deltaTime;
+                    if (GazeTime1 > 0.5f)
                     {
                         bubble = hit.collider.gameObject.GetComponent<BubbleScript>();
                         bubble.SendMessage("Pop");
-                        GazeTime = 0.0f;
+                        GazeTime1 = 0.0f;
                     }
                 }
 
                 if (hit.collider.name == "Screen") {
-                    vplayer.Play();
+                    GazeTime2 += Time.deltaTime;
+                    if (GazeTime2 > 0.5f)
+                    {
+                        vplayer.Play();
+                    }
                 }
             }
             else {
-                GazeTime = 0.0f;
+                GazeTime1 = 0.0f;
+                GazeTime2 = 0.0f;
                 vplayer.Pause();
             }
         }
