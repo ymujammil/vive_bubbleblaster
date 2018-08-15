@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -16,6 +17,8 @@ public class PlayerScript_Gaze : MonoBehaviour {
     private Vector2 GazeCenter;
     private float GazeTime1;
     private float GazeTime2;
+    private double blink_onset;
+    private double blink_offset;
 
     // Use this for initialization
     void Start () {
@@ -42,7 +45,8 @@ public class PlayerScript_Gaze : MonoBehaviour {
         if (controller.PLAYING) {
             Ray gazeray = SceneCamera.ViewportPointToRay(ViewPoint);
             //Ray gaze3d = SceneCamera.ScreenPointToRay(marker.transform.position);
-            //Debug.DrawRay(gaze3d.origin, gaze3d.direction, Color.green);
+            //Debug.DrawRay(gaze3d.origin, gaze3d.direction, Color.green);    
+            Debug.Log("blink = " + checkIfBlink());
             RaycastHit hit;
             if (Physics.Raycast(gazeray, out hit))
             {
@@ -71,4 +75,31 @@ public class PlayerScript_Gaze : MonoBehaviour {
             }
         }
 	}
+
+    bool checkIfBlink() {
+        bool blink = false;
+        if (PupilTools.blinkDictionary != null)
+        {            
+            if ((string)PupilTools.blinkDictionary["type"] == "onset")
+            {
+                blink_onset = (double)PupilTools.blinkDictionary["timestamp"];
+            }
+            else
+            {
+                blink_offset = (double)PupilTools.blinkDictionary["timestamp"];
+            }
+            //Debug.Log("difference " + Math.Abs(blink_offset - blink_onset));
+            if (Math.Abs(blink_offset - blink_onset) < 0.5)
+            {
+                //Debug.Log("Actual blink");
+                blink = true;
+                blink_onset = 0;
+                blink_offset = 0;
+            }
+            //Debug.Log(PupilTools.blinkDictionary["timestamp"] + " " + PupilTools.blinkDictionary["type"] + " " + Math.Abs(blink_offset - blink_onset));
+
+            PupilTools.blinkDictionary = null;
+        }
+        return blink;
+    }
 }
