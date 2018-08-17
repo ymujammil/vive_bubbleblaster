@@ -147,10 +147,8 @@ public class PupilTools : MonoBehaviour
 			UpdateGaze ();
 		}
 	}
-    public static Dictionary<string, object> blinkDictionary;
 
-
-    private static string[] gazeKeys = { "gaze_point_3d", "norm_pos", "eye_centers_3d" , "gaze_normals_3d" };
+	private static string[] gazeKeys = { "gaze_point_3d", "norm_pos", "eye_centers_3d" , "gaze_normals_3d" };
 	private static string eyeDataKey;
 	private static void UpdateGaze()
 	{
