@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI;
+
 
 public class PupilManager : MonoBehaviour 
 {
@@ -27,7 +28,7 @@ public class PupilManager : MonoBehaviour
 		ResetCalibrationText ();
 	}
 
-	void ResetCalibrationText()
+    void ResetCalibrationText()
 	{
 		if (calibrationText == null)
 			calibrationText = cameraObject.GetComponentInChildren<Text> ();
@@ -37,12 +38,26 @@ public class PupilManager : MonoBehaviour
 
 	void OnDisconnected()
 	{
-		ResetCalibrationText ();
+        ResetCalibrationText ();
 	}
 
 	void OnConnected()
 	{
-		calibrationText.text = "Success";
+        // Subscribe to blinks
+        Debug.Log("starting blink");
+        PupilTools.SubscribeTo("blinks");
+        PupilTools.Send(new Dictionary<string, object> {
+            { "subject", "start_plugin" }
+            ,{ "name", "Blink_Detection" }
+            ,{
+                "args", new Dictionary<string,object> {
+                    { "history_length", 0.2f }
+                    ,{ "onset_confidence_threshold", 0.5f }
+                    ,{ "offset_confidence_threshold", 0.5f }
+                }
+            }
+        });
+        calibrationText.text = "Success";
 
 		PupilTools.CalibrationMode = calibrationMode;
 
@@ -133,5 +148,11 @@ public class PupilManager : MonoBehaviour
 		PupilTools.OnCalibrationStarted -= OnCalibtaionStarted;
 		PupilTools.OnCalibrationEnded -= OnCalibrationEnded;
 		PupilTools.OnCalibrationFailed -= OnCalibrationFailed;
-	}
+        Debug.Log("stopping blink");
+        PupilTools.UnSubscribeFrom("blinks");
+        PupilTools.Send(new Dictionary<string, object> {
+            { "subject","stop_plugin" }
+            ,{ "name", "Blink_Detection" }
+        });
+    }
 }

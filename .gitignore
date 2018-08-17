@@ -28,3 +28,6 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+.vs/vive_bubbleblaster/v15/Server/sqlite3/storage.ide
+.vs/vive_bubbleblaster/v15/Server/sqlite3/storage.ide-shm
+.vs/vive_bubbleblaster/v15/Server/sqlite3/storage.ide-wal
