@@ -137,6 +137,7 @@ public class PupilManager : MonoBehaviour
 
 	void Update()
 	{
+        PupilTools.blink_timestamp += Time.deltaTime;
 		if (Input.GetKeyUp (KeyCode.S)) 
 			StartDemo ();
 	}

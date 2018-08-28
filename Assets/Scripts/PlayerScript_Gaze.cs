@@ -10,9 +10,11 @@ public class PlayerScript_Gaze : MonoBehaviour {
     Camera SceneCamera;
     GameController controller;
     BubbleScript bubble;
-    VideoPlayer vplayer; 
-    
-    //GameObject marker;
+    VideoPlayer vplayer;
+    GameObject FastForward;
+    GameObject Rewind;
+
+    private IEnumerator coroutine;
 
     private Vector2 GazeCenter;
     private float GazeTime1;
@@ -25,6 +27,10 @@ public class PlayerScript_Gaze : MonoBehaviour {
         SceneCamera = Camera.main;
         controller = GameObject.FindObjectOfType<Terrain>().GetComponent<GameController>();
         vplayer = GameObject.FindGameObjectWithTag("Player").GetComponent<VideoPlayer>();
+        FastForward = GameObject.Find("fast-forward");
+        Rewind = GameObject.Find("rewind");
+        FastForward.SetActive(false);
+        Rewind.SetActive(false);
     }
     void OnEnable() {
         if (PupilTools.IsConnected)
@@ -36,21 +42,19 @@ public class PlayerScript_Gaze : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        CheckIfBlink();
         Vector3 ViewPoint = StandardViewPoint;
         if (PupilTools.IsConnected && PupilTools.IsGazing) {
-            //marker = GameObject.Find("Gaze_3D");
             GazeCenter = PupilData._2D.GazePosition;
             ViewPoint = new Vector3(GazeCenter.x, GazeCenter.y, 1f);
         }
-        if (controller.PLAYING) {
             Ray gazeray = SceneCamera.ViewportPointToRay(ViewPoint);
-            //Ray gaze3d = SceneCamera.ScreenPointToRay(marker.transform.position);
-            //Debug.DrawRay(gaze3d.origin, gaze3d.direction, Color.green);    
-            Debug.Log("blink = " + checkIfBlink());
+            Debug.DrawRay(gazeray.origin, gazeray.direction, Color.green);    
+            //Debug.Log("blink = " + CheckIfBlink());
             RaycastHit hit;
             if (Physics.Raycast(gazeray, out hit))
-            {
-                if (hit.collider.CompareTag("Bubble")) {
+            {                
+                if (controller.PLAYING && hit.collider.CompareTag("Bubble")) {
                     GazeTime1 += Time.deltaTime;
                     if (GazeTime1 > 0.5f)
                     {
@@ -60,23 +64,48 @@ public class PlayerScript_Gaze : MonoBehaviour {
                     }
                 }
 
-                if (hit.collider.name == "Screen") {
+                if (hit.collider.name == "Screen")
+                {
+                    float rightR = (hit.collider.transform.position.x - (hit.collider.bounds.size.x / 2));
+                    float leftR = (hit.collider.transform.position.x + (hit.collider.bounds.size.x / 2));
+                    double timeSinceLastBlink = PupilTools.blink_timestamp - PupilTools.blink_timestamp_recent;
+                    Debug.Log("The range from " + leftR + " to " + rightR);
+                    //Debug.Log("Hit Point x" + hit.point.x);
+                    if (hit.point.x > (leftR - (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
+                    { //left 
+                        Debug.Log("Seek backward");
+                        Rewind.SetActive(true);
+                        coroutine = WaitAndHide(Rewind);
+                        StartCoroutine(coroutine);
+                        PupilTools.blink_timestamp_recent = -10000;
+                        vplayer.time = vplayer.time - 10;
+                    }
+                    if (hit.point.x < (rightR + (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
+                    { // right
+                        Debug.Log("Seek forward");
+                        FastForward.SetActive(true);
+                        coroutine = WaitAndHide(FastForward);
+                        StartCoroutine(coroutine);
+                        PupilTools.blink_timestamp_recent = -10000;
+                        vplayer.time = vplayer.time + 10;
+                    }
                     GazeTime2 += Time.deltaTime;
                     if (GazeTime2 > 0.5f)
                     {
                         vplayer.Play();
                     }
                 }
+                else {
+                    GazeTime2 = 0.0f;
+                    vplayer.Pause();           
+                }
             }
             else {
                 GazeTime1 = 0.0f;
-                GazeTime2 = 0.0f;
-                vplayer.Pause();
             }
-        }
 	}
 
-    bool checkIfBlink() {
+    bool CheckIfBlink() {
         bool blink = false;
         if (PupilTools.blinkDictionary != null)
         {            
@@ -88,10 +117,11 @@ public class PlayerScript_Gaze : MonoBehaviour {
             {
                 blink_offset = (double)PupilTools.blinkDictionary["timestamp"];
             }
-            //Debug.Log("difference " + Math.Abs(blink_offset - blink_onset));
+            //Debug.Log("difference " + Math.Abs(blink_offset - blink_onset))
             if (Math.Abs(blink_offset - blink_onset) < 0.5)
             {
-                //Debug.Log("Actual blink");
+                PupilTools.blink_timestamp = (double)PupilTools.blinkDictionary["timestamp"];
+                PupilTools.blink_timestamp_recent = (double)PupilTools.blinkDictionary["timestamp"];
                 blink = true;
                 blink_onset = 0;
                 blink_offset = 0;
@@ -101,5 +131,11 @@ public class PlayerScript_Gaze : MonoBehaviour {
             PupilTools.blinkDictionary = null;
         }
         return blink;
+    }
+
+    IEnumerator WaitAndHide(GameObject icon)
+    {
+        yield return (new WaitForSeconds(2));
+        icon.SetActive(false);
     }
 }
