@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class PupilManager : MonoBehaviour 
@@ -14,7 +15,7 @@ public class PupilManager : MonoBehaviour
 	GameObject cameraObject;
 	Text calibrationText;
 
-	void Start()
+    void Start()
 	{	
 		PupilTools.OnConnected += OnConnected;
 		PupilTools.OnDisconnecting += OnDisconnected;
@@ -101,13 +102,13 @@ public class PupilManager : MonoBehaviour
 		cameraObject.SetActive (true);
 		PupilSettings.Instance.currentCamera = cameraObject.GetComponent<Camera> ();
 		calibrationText.text = "";
-			
-		foreach (GameObject go in gameObjectsToEnable) 
-		{
-			go.SetActive (false);
-		}
 
-		if (displayEyeImages)
+        foreach (GameObject go in gameObjectsToEnable)
+        {
+            go.SetActive(false);
+        }
+
+        if (displayEyeImages)
 			GetComponent<FramePublishing> ().enabled = false;
 	}
 		
@@ -128,12 +129,14 @@ public class PupilManager : MonoBehaviour
 
 	void StartDemo()
 	{
-		foreach (GameObject go in gameObjectsToEnable) 
-		{
-			go.SetActive (true);
-		}
-		cameraObject.SetActive (false);
-	}
+        //Scenes.setParam("Calibration", "Success");
+        //SceneManager.LoadScene(1);
+        foreach (GameObject go in gameObjectsToEnable)
+        {
+            go.SetActive(true);
+        }
+        cameraObject.SetActive(false);
+    }
 
 	void Update()
 	{
