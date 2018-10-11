@@ -19,6 +19,8 @@ public class PlayerScript_Gaze : MonoBehaviour {
     private Vector2 GazeCenter;
     private float GazeTime1;
     private float GazeTime2;
+    private float GazeTime3;
+    private float GazeTime4;
     private double blink_onset;
     private double blink_offset;
 
@@ -29,8 +31,8 @@ public class PlayerScript_Gaze : MonoBehaviour {
         vplayer = GameObject.FindGameObjectWithTag("Player").GetComponent<VideoPlayer>();
         FastForward = GameObject.Find("fast-forward");
         Rewind = GameObject.Find("rewind");
-        FastForward.SetActive(false);
-        Rewind.SetActive(false);
+        //FastForward.SetActive(false);
+        //Rewind.SetActive(false);
     }
     void OnEnable() {
         if (PupilTools.IsConnected)
@@ -66,29 +68,30 @@ public class PlayerScript_Gaze : MonoBehaviour {
 
                 if (hit.collider.name == "Screen")
                 {
-                    float rightR = (hit.collider.transform.position.x - (hit.collider.bounds.size.x / 2));
-                    float leftR = (hit.collider.transform.position.x + (hit.collider.bounds.size.x / 2));
-                    double timeSinceLastBlink = PupilTools.blink_timestamp - PupilTools.blink_timestamp_recent;
-                    Debug.Log("The range from " + leftR + " to " + rightR);
-                    //Debug.Log("Hit Point x" + hit.point.x);
-                    if (hit.point.x > (leftR - (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
-                    { //left 
-                        Debug.Log("Seek backward");
-                        Rewind.SetActive(true);
-                        coroutine = WaitAndHide(Rewind);
-                        StartCoroutine(coroutine);
-                        PupilTools.blink_timestamp_recent = -10000;
-                        vplayer.time = vplayer.time - 10;
-                    }
-                    if (hit.point.x < (rightR + (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
-                    { // right
-                        Debug.Log("Seek forward");
-                        FastForward.SetActive(true);
-                        coroutine = WaitAndHide(FastForward);
-                        StartCoroutine(coroutine);
-                        PupilTools.blink_timestamp_recent = -10000;
-                        vplayer.time = vplayer.time + 10;
-                    }
+                    //float rightR = (hit.collider.transform.position.x - (hit.collider.bounds.size.x / 2));
+                    //float leftR = (hit.collider.transform.position.x + (hit.collider.bounds.size.x / 2));
+                    //double timeSinceLastBlink = PupilTools.blink_timestamp - PupilTools.blink_timestamp_recent;
+                    //Debug.Log("The range from " + leftR + " to " + rightR);
+                    ////Debug.Log("Hit Point x" + hit.point.x);
+                    //if (hit.point.x > (leftR - (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
+                    //{ //left 
+                    //    Debug.Log("Seek backward");
+                    //    Rewind.SetActive(true);
+                    //    coroutine = WaitAndHide(Rewind);
+                    //    StartCoroutine(coroutine);
+                    //    PupilTools.blink_timestamp_recent = -10000;
+                    //    vplayer.time = vplayer.time - 10;
+                    //}
+                    //if (hit.point.x < (rightR + (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
+                    //{ // right
+                    //    Debug.Log("Seek forward");
+                    //    FastForward.SetActive(true);
+                    //    coroutine = WaitAndHide(FastForward);
+                    //    StartCoroutine(coroutine);
+                    //    PupilTools.blink_timestamp_recent = -10000;
+                    //    vplayer.time = vplayer.time + 10;
+                    //}
+
                     GazeTime2 += Time.deltaTime;
                     if (GazeTime2 > 0.5f)
                     {
@@ -99,7 +102,27 @@ public class PlayerScript_Gaze : MonoBehaviour {
                     GazeTime2 = 0.0f;
                     vplayer.Pause();           
                 }
-            }
+                if (hit.collider.name == "rewind") {
+                    GazeTime3 += Time.deltaTime;
+                    if (GazeTime3 > 2f)
+                    {
+                        vplayer.time = vplayer.time - 10;
+                        GazeTime3 = 0.0f;
+                    }
+
+                }
+                else GazeTime3 = 0.0f;
+                if (hit.collider.name == "fast-forward") {
+                    GazeTime4 += Time.deltaTime;
+                    if (GazeTime4 > 2f)
+                    {
+                        vplayer.time = vplayer.time + 10;
+                        GazeTime4 = 0.0f;
+                    }
+                }
+                else GazeTime4 = 0.0f;
+
+        }
             else {
                 GazeTime1 = 0.0f;
             }

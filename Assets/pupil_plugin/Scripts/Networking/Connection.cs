@@ -119,20 +119,22 @@ public class Connection
 			subscriptionSocketForTopic.Add (topic, new SubscriberSocket (IPHeader + subport));
 			subscriptionSocketForTopic [topic].Subscribe (topic);
 
-            //André: Is this necessary??
-            //			subscriptionSocketForTopic[topic].Options.SendHighWatermark = PupilSettings.numberOfMessages;// 6;
+			//André: Is this necessary??
+//			subscriptionSocketForTopic[topic].Options.SendHighWatermark = PupilSettings.numberOfMessages;// 6;
 
 			subscriptionSocketForTopic[topic].ReceiveReady += (s, a) => 
 			{
 				int i = 0;
-                NetMQMessage m = new NetMQMessage();
+
+				NetMQMessage m = new NetMQMessage();
 
 				while(a.Socket.TryReceiveMultipartMessage(ref m)) 
 				{
-                    // We read all the messages from the socket, but disregard the ones after a certain point
-                    //				if ( i > PupilSettings.numberOfMessages ) // 6)
-                    //					continue;
-                    string msgType = m[0].ConvertToString();
+					// We read all the messages from the socket, but disregard the ones after a certain point
+	//				if ( i > PupilSettings.numberOfMessages ) // 6)
+	//					continue;
+
+					string msgType = m[0].ConvertToString();
 					mStream = new MemoryStream(m[1].ToByteArray());
 					byte[] thirdFrame = null;
 					if (m.FrameCount >= 3)
@@ -146,11 +148,11 @@ public class Connection
 
 					if ( PupilTools.ReceiveDataIsSet )
 					{
-                        PupilTools.ReceiveData( msgType, MessagePackSerializer.Deserialize<Dictionary<string,object>> (mStream), thirdFrame);
+						PupilTools.ReceiveData( msgType, MessagePackSerializer.Deserialize<Dictionary<string,object>> (mStream), thirdFrame);
 						continue;
 					}
-                    //Debug.Log("subscribed to " + msgType);
-                    switch (msgType)
+
+					switch(msgType)
 					{
 					case "notify.calibration.successful":
 						PupilTools.CalibrationFinished();
@@ -177,14 +179,6 @@ public class Connection
 					case "frame.eye.0":
 					case "frame.eye.1":
 						break;
-                    case "blinks":
-                        var blink_dictionary = MessagePackSerializer.Deserialize<Dictionary<string, object>>(mStream);
-                        var blink_confidence = PupilTools.FloatFromDictionary(blink_dictionary, "confidence");
-                            if (blink_confidence > 0.6f && msgType == "blinks") {
-                                PupilTools.blinkDictionary = blink_dictionary;
-                            }
-
-                        break;
 					default: 
 						Debug.Log(msgType);
 						break;

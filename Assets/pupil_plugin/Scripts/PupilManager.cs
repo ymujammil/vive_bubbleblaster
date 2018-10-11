@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;using UnityEngine.SceneManagement;
 
 public class PupilManager : MonoBehaviour 
 {
@@ -15,7 +13,7 @@ public class PupilManager : MonoBehaviour
 	GameObject cameraObject;
 	Text calibrationText;
 
-    void Start()
+	void Start()
 	{	
 		PupilTools.OnConnected += OnConnected;
 		PupilTools.OnDisconnecting += OnDisconnected;
@@ -29,7 +27,7 @@ public class PupilManager : MonoBehaviour
 		ResetCalibrationText ();
 	}
 
-    void ResetCalibrationText()
+	void ResetCalibrationText()
 	{
 		if (calibrationText == null)
 			calibrationText = cameraObject.GetComponentInChildren<Text> ();
@@ -39,26 +37,12 @@ public class PupilManager : MonoBehaviour
 
 	void OnDisconnected()
 	{
-        ResetCalibrationText ();
+		ResetCalibrationText ();
 	}
 
 	void OnConnected()
 	{
-        // Subscribe to blinks
-        Debug.Log("starting blink");
-        PupilTools.SubscribeTo("blinks");
-        PupilTools.Send(new Dictionary<string, object> {
-            { "subject", "start_plugin" }
-            ,{ "name", "Blink_Detection" }
-            ,{
-                "args", new Dictionary<string,object> {
-                    { "history_length", 0.2f }
-                    ,{ "onset_confidence_threshold", 0.5f }
-                    ,{ "offset_confidence_threshold", 0.5f }
-                }
-            }
-        });
-        calibrationText.text = "Success";
+		calibrationText.text = "Success";
 
 		PupilTools.CalibrationMode = calibrationMode;
 
@@ -102,13 +86,13 @@ public class PupilManager : MonoBehaviour
 		cameraObject.SetActive (true);
 		PupilSettings.Instance.currentCamera = cameraObject.GetComponent<Camera> ();
 		calibrationText.text = "";
+			
+		foreach (GameObject go in gameObjectsToEnable) 
+		{
+			go.SetActive (false);
+		}
 
-        foreach (GameObject go in gameObjectsToEnable)
-        {
-            go.SetActive(false);
-        }
-
-        if (displayEyeImages)
+		if (displayEyeImages)
 			GetComponent<FramePublishing> ().enabled = false;
 	}
 		
@@ -129,18 +113,16 @@ public class PupilManager : MonoBehaviour
 
 	void StartDemo()
 	{
-        //Scenes.setParam("Calibration", "Success");
-        //SceneManager.LoadScene(1);
-        foreach (GameObject go in gameObjectsToEnable)
-        {
-            go.SetActive(true);
-        }
-        cameraObject.SetActive(false);
+		foreach (GameObject go in gameObjectsToEnable) 
+		{
+			go.SetActive (true);
+		}
+		cameraObject.SetActive (false);
+        //SceneManager.LoadScene(2);
     }
 
 	void Update()
 	{
-        PupilTools.blink_timestamp += Time.deltaTime;
 		if (Input.GetKeyUp (KeyCode.S)) 
 			StartDemo ();
 	}
@@ -152,11 +134,5 @@ public class PupilManager : MonoBehaviour
 		PupilTools.OnCalibrationStarted -= OnCalibtaionStarted;
 		PupilTools.OnCalibrationEnded -= OnCalibrationEnded;
 		PupilTools.OnCalibrationFailed -= OnCalibrationFailed;
-        Debug.Log("stopping blink");
-        PupilTools.UnSubscribeFrom("blinks");
-        PupilTools.Send(new Dictionary<string, object> {
-            { "subject","stop_plugin" }
-            ,{ "name", "Blink_Detection" }
-        });
-    }
+	}
 }

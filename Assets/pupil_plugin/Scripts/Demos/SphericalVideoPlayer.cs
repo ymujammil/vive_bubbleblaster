@@ -19,7 +19,7 @@ public class SphericalVideoPlayer : MonoBehaviour
 	void Start () 
 	{
 		var player = gameObject.AddComponent<VideoPlayer> ();
-		player.playOnAwake = false;
+		player.playOnAwake = true;
 		player.isLooping = true;
 		player.renderMode = VideoRenderMode.RenderTexture;
 		player.url = FilePath;
