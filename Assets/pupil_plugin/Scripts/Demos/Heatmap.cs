@@ -237,14 +237,16 @@ public class Heatmap : MonoBehaviour
 	void Update () 
 	{
 		transform.eulerAngles = Vector3.zero;
-
+        //Debug.Log("collision layer no : " + (int)collisionLayer);
 		if (PupilTools.IsConnected && PupilTools.IsGazing)
 		{
 			Vector2 gazePosition = PupilData._2D.GazePosition;
 
 			RaycastHit hit;
 //			if (Input.GetMouseButton(0) && Physics.Raycast(cam.ScreenPointToRay (Input.mousePosition), out hit, 1f, (int) collisionLayer))
-			if (Physics.Raycast(cam.ViewportPointToRay (gazePosition), out hit, 1f, (int)collisionLayer))
+			if (Physics.Raycast(cam.ViewportPointToRay (gazePosition), out hit, 1f 
+                ,(int)collisionLayer
+                ))
 			{
 				if ( hit.collider.gameObject != gameObject )
 					return;

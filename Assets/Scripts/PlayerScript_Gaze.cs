@@ -54,10 +54,11 @@ public class PlayerScript_Gaze : MonoBehaviour {
             Debug.DrawRay(gazeray.origin, gazeray.direction, Color.green);    
             //Debug.Log("blink = " + CheckIfBlink());
             RaycastHit hit;
-            if (Physics.Raycast(gazeray, out hit))
-            {                
+            int layerMask = 1 << 8;
+            if (Physics.Raycast(gazeray, out hit,Mathf.Infinity,~layerMask))
+            {
                 if (controller.PLAYING && hit.collider.CompareTag("Bubble")) {
-                    GazeTime1 += Time.deltaTime;
+                GazeTime1 += Time.deltaTime;
                     if (GazeTime1 > 0.5f)
                     {
                         bubble = hit.collider.gameObject.GetComponent<BubbleScript>();
@@ -68,30 +69,29 @@ public class PlayerScript_Gaze : MonoBehaviour {
 
                 if (hit.collider.name == "Screen")
                 {
-                    //float rightR = (hit.collider.transform.position.x - (hit.collider.bounds.size.x / 2));
-                    //float leftR = (hit.collider.transform.position.x + (hit.collider.bounds.size.x / 2));
-                    //double timeSinceLastBlink = PupilTools.blink_timestamp - PupilTools.blink_timestamp_recent;
-                    //Debug.Log("The range from " + leftR + " to " + rightR);
-                    ////Debug.Log("Hit Point x" + hit.point.x);
-                    //if (hit.point.x > (leftR - (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
-                    //{ //left 
-                    //    Debug.Log("Seek backward");
-                    //    Rewind.SetActive(true);
-                    //    coroutine = WaitAndHide(Rewind);
-                    //    StartCoroutine(coroutine);
-                    //    PupilTools.blink_timestamp_recent = -10000;
-                    //    vplayer.time = vplayer.time - 10;
-                    //}
-                    //if (hit.point.x < (rightR + (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
-                    //{ // right
-                    //    Debug.Log("Seek forward");
-                    //    FastForward.SetActive(true);
-                    //    coroutine = WaitAndHide(FastForward);
-                    //    StartCoroutine(coroutine);
-                    //    PupilTools.blink_timestamp_recent = -10000;
-                    //    vplayer.time = vplayer.time + 10;
-                    //}
-
+                //float rightR = (hit.collider.transform.position.x - (hit.collider.bounds.size.x / 2));
+                //float leftR = (hit.collider.transform.position.x + (hit.collider.bounds.size.x / 2));
+                //double timeSinceLastBlink = PupilTools.blink_timestamp - PupilTools.blink_timestamp_recent;
+                //Debug.Log("The range from " + leftR + " to " + rightR);
+                ////Debug.Log("Hit Point x" + hit.point.x);
+                //if (hit.point.x > (leftR - (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
+                //{ //left 
+                //    Debug.Log("Seek backward");
+                //    Rewind.SetActive(true);
+                //    coroutine = WaitAndHide(Rewind);
+                //    StartCoroutine(coroutine);
+                //    PupilTools.blink_timestamp_recent = -10000;
+                //    vplayer.time = vplayer.time - 10;
+                //}
+                //if (hit.point.x < (rightR + (0.10 * hit.collider.bounds.size.x)) && timeSinceLastBlink < 2)
+                //{ // right
+                //    Debug.Log("Seek forward");
+                //    FastForward.SetActive(true);
+                //    coroutine = WaitAndHide(FastForward);
+                //    StartCoroutine(coroutine);
+                //    PupilTools.blink_timestamp_recent = -10000;
+                //    vplayer.time = vplayer.time + 10;
+                //}
                     GazeTime2 += Time.deltaTime;
                     if (GazeTime2 > 0.5f)
                     {
