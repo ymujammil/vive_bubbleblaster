@@ -104,7 +104,7 @@ namespace HeurekaGames
 
 #if !UNITY_5
             List<string> targetResourcePaths = new List<string>();
-            targetResourcePaths.Add(UnityEditor.PlayerSettings.Metro.certificatePath);
+            targetResourcePaths.Add(UnityEditor.PlayerSettings.WSA.certificatePath);
             targetResourcePaths.AddRange(getWin8AssetPaths());
 
             //Loop the paths
@@ -161,7 +161,7 @@ namespace HeurekaGames
 
             List<String> reflectedPaths = new List<string>();
 
-            PropertyInfo[] properties = typeof(UnityEditor.PlayerSettings.Metro).GetProperties(BindingFlags.Public | BindingFlags.Static);
+            PropertyInfo[] properties = typeof(UnityEditor.PlayerSettings.WSA).GetProperties(BindingFlags.Public | BindingFlags.Static);
 
             //From UnityEditor.PlayerSettings.Metro I get these property names
             string[] validProperties = new string[5]

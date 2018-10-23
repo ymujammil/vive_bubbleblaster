@@ -67,9 +67,9 @@ public class PupilGazeTracker:MonoBehaviour
 		PupilTools.IsConnected = false;
 		PupilTools.IsIdle = true;
 
-		var relativeRightEyePosition = UnityEngine.VR.InputTracking.GetLocalPosition (UnityEngine.VR.VRNode.RightEye) - UnityEngine.VR.InputTracking.GetLocalPosition (UnityEngine.VR.VRNode.CenterEye);
+		var relativeRightEyePosition = UnityEngine.XR.InputTracking.GetLocalPosition (UnityEngine.XR.XRNode.RightEye) - UnityEngine.XR.InputTracking.GetLocalPosition (UnityEngine.XR.XRNode.CenterEye);
 		PupilTools.Calibration.rightEyeTranslation = new float[] { relativeRightEyePosition.z*PupilSettings.PupilUnitScalingFactor, 0, 0 };
-		var relativeLeftEyePosition = UnityEngine.VR.InputTracking.GetLocalPosition (UnityEngine.VR.VRNode.LeftEye) - UnityEngine.VR.InputTracking.GetLocalPosition (UnityEngine.VR.VRNode.CenterEye);
+		var relativeLeftEyePosition = UnityEngine.XR.InputTracking.GetLocalPosition (UnityEngine.XR.XRNode.LeftEye) - UnityEngine.XR.InputTracking.GetLocalPosition (UnityEngine.XR.XRNode.CenterEye);
 		PupilTools.Calibration.leftEyeTranslation = new float[] { relativeLeftEyePosition.z*PupilSettings.PupilUnitScalingFactor, 0, 0 };
 
 		#if !UNITY_WSA
