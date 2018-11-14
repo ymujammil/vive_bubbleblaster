@@ -127,8 +127,8 @@ public class Heatmap : MonoBehaviour
 		if (RenderingCamera != null)
 		{
 			RenderingCamera.aspect = 2;
-			renderingTexture = new RenderTexture (2048, 1024, 0);
-			RenderingCamera.targetTexture = renderingTexture;
+			renderingTexture = new RenderTexture (854, 480, 0); //(2048, 1024, 0) (1280, 720, 0)
+            RenderingCamera.targetTexture = renderingTexture;
 
 			RenderingMeshFilter = RenderingCamera.GetComponentInChildren<MeshFilter> ();
 			RenderingMeshFilter.mesh = GeneratePlaneWithSphereNormals ();
@@ -140,8 +140,8 @@ public class Heatmap : MonoBehaviour
 			if (MaskingCamera != null)
 			{
 				MaskingCamera.aspect = 2;
-				maskingTexture = new RenderTexture (2048, 1024, 0);
-				MaskingCamera.targetTexture = maskingTexture;
+				maskingTexture = new RenderTexture (854, 480, 0);//(2048, 1024, 0) (1280, 720, 0)
+                MaskingCamera.targetTexture = maskingTexture;
 				renderingMaterial.SetTexture ("_Mask", maskingTexture);
 			}
 		}
@@ -291,15 +291,27 @@ public class Heatmap : MonoBehaviour
 				{
 					// With the winter 2017 release of this plugin, Pupil timestamp is set to Unity time when connecting
 					timeStampList.AddRange( System.BitConverter.GetBytes(Time.time));
-					_pipe.Write (CaptureCurrentView ().GetRawTextureData ());
+                    StartCoroutine("WriteMpeg");
+                    //_pipe.Write (CaptureCurrentView().GetRawTextureData());
 				}
 			}
 		} else
 		{
-			if (_pipe != null)
-				ClosePipe ();
+            if (_pipe != null)
+            {
+                StopCoroutine("WriteMpeg");
+                ClosePipe();
+            }
+
 		}
 	}
+
+    IEnumerator WriteMpeg()
+    {
+        _pipe.Write(CaptureCurrentView().GetRawTextureData());
+        yield return null;
+
+    }
 
 	bool _capturing = false;
 	bool capturing
